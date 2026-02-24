@@ -47,6 +47,24 @@
             border: 1px solid rgba(255,255,255,0.1);
             box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3);
         }
+
+        .docs-panel {
+            background: linear-gradient(160deg, rgba(255,255,255,0.92), rgba(255,255,255,0.72));
+            border: 1px solid rgba(19, 78, 74, 0.12);
+            box-shadow: 0 16px 44px -20px rgba(19, 78, 74, 0.25);
+            backdrop-filter: blur(14px);
+        }
+
+        .docs-code {
+            background: #101418;
+            color: #E2E8F0;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .docs-kbd { color: #7dd3fc; }
+
+        .spec-table tr + tr td { border-top: 1px solid rgba(28,25,23,0.08); }
+        .spec-table td { padding: 10px 12px; vertical-align: top; }
         
         ::selection { background: #134E4A; color: #F9F8F6; }
         
@@ -72,7 +90,7 @@
                 <a href="#markets" class="hover:text-teal-accent transition-colors">Markets</a>
             </div>
             <div class="flex items-center gap-6">
-                <a href="#" class="hidden sm:block text-sm font-medium text-ink-muted hover:text-ink transition-colors">Docs</a>
+                <a href="#builder-docs" class="hidden sm:block text-sm font-medium text-ink-muted hover:text-ink transition-colors">Docs</a>
                 <button class="bg-teal-accent hover:bg-teal-light text-white text-sm font-medium px-6 py-2.5 rounded-full shadow-md transition-all hover:-translate-y-0.5">Start Building</button>
             </div>
         </div>
@@ -182,6 +200,156 @@
             <div class="glass-panel p-8 rounded-2xl"><div class="font-mono text-xs font-bold text-teal-accent mb-4 border border-teal-accent/20 inline-block px-3 py-1 rounded">01</div><h4 class="text-2xl font-medium mb-4">Commodity Inference</h4><p class="text-sm text-ink-muted leading-relaxed">A seller has a model or API access. A buyer needs inference. They trade directly. Price set by open competition — margins compress toward zero and the buyer pays near-cost.</p></div>
             <div class="glass-panel p-8 rounded-2xl"><div class="font-mono text-xs font-bold text-teal-accent mb-4 border border-teal-accent/20 inline-block px-3 py-1 rounded">02</div><h4 class="text-2xl font-medium mb-4">Differentiated Services</h4><p class="text-sm text-ink-muted leading-relaxed">Same protocol, but the seller equips their model with Skills — modular packages of domain expertise and workflows. The buyer does not care what is inside. They care about the result.</p></div>
             <div class="glass-panel p-8 rounded-2xl"><div class="font-mono text-xs font-bold text-teal-accent mb-4 border border-teal-accent/20 inline-block px-3 py-1 rounded">03</div><h4 class="text-2xl font-medium mb-4">Agent Commerce</h4><p class="text-sm text-ink-muted leading-relaxed">Same protocol, but now the buyers are also machines. An autonomous agent holds credits, discovers providers by capability, evaluates reputation, consumes services, and settles payment.</p></div>
+        </div>
+    </section>
+
+    <section id="builder-docs" class="py-28 border-t border-black/5 relative">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="max-w-3xl mb-12">
+                <h2 class="text-xs font-bold font-mono uppercase tracking-[0.2em] text-teal-accent mb-4">Merged Docs</h2>
+                <h3 class="text-4xl md:text-5xl font-medium tracking-tight mb-6">Install + Configure + Connect</h3>
+                <p class="text-lg text-ink-muted leading-relaxed">These operational elements are brought from the old AntSeed docs into this new light design, so the marketing layer and technical layer live together.</p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mb-10">
+                <a href="#protocol-spec" class="px-4 py-2 rounded-full text-sm border border-teal-accent/20 bg-white/70 hover:bg-white">Protocol Spec</a>
+                <a href="#cli-reference" class="px-4 py-2 rounded-full text-sm border border-teal-accent/20 bg-white/70 hover:bg-white">CLI Reference</a>
+                <a href="#router-weights" class="px-4 py-2 rounded-full text-sm border border-teal-accent/20 bg-white/70 hover:bg-white">Router Weights</a>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="docs-panel rounded-2xl p-8">
+                    <h4 class="text-2xl font-semibold mb-4">Install</h4>
+                    <p class="text-sm text-ink-muted mb-4">Requires Node.js 18+ and supports macOS, Linux, and Windows (WSL).</p>
+                    <div class="docs-code rounded-xl p-5 font-mono text-sm mb-4 overflow-x-auto">
+                        <span class="docs-kbd">$</span> npm install -g @antseed/cli
+                    </div>
+                    <div class="docs-code rounded-xl p-5 font-mono text-xs mb-4 overflow-x-auto">
+                        <div><span class="docs-kbd">$</span> antseed --version</div>
+                        <div class="text-slate-400 mt-2">antseed v0.1.0-alpha</div>
+                    </div>
+                    <div class="docs-code rounded-xl p-5 font-mono text-xs overflow-x-auto">
+                        <div><span class="docs-kbd">$</span> antseed init</div>
+                        <div class="text-slate-400 mt-2">Generated node identity (Ed25519)</div>
+                        <div class="text-slate-400">Created ~/.antseed/identity.key</div>
+                        <div class="text-slate-400">Installed official plugins</div>
+                    </div>
+                </div>
+
+                <div class="docs-panel rounded-2xl p-8">
+                    <h4 class="text-2xl font-semibold mb-4">Configuration</h4>
+                    <p class="text-sm text-ink-muted mb-6">Core config file: <span class="font-mono text-teal-accent">~/.antseed/config.json</span></p>
+                    <table class="w-full text-sm spec-table">
+                        <tbody>
+                            <tr><td class="font-mono text-teal-accent">identity</td><td class="text-ink-muted">Display name + wallet address</td></tr>
+                            <tr><td class="font-mono text-teal-accent">providers</td><td class="text-ink-muted">API keys and provider endpoints</td></tr>
+                            <tr><td class="font-mono text-teal-accent">seller</td><td class="text-ink-muted">Floor, capacity, and pricing settings</td></tr>
+                            <tr><td class="font-mono text-teal-accent">buyer</td><td class="text-ink-muted">Preferred providers and reputation floor</td></tr>
+                            <tr><td class="font-mono text-teal-accent">payments</td><td class="text-ink-muted">USDC settlement and chain config</td></tr>
+                            <tr><td class="font-mono text-teal-accent">network</td><td class="text-ink-muted">Bootstrap node list</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="docs-code rounded-xl p-5 font-mono text-xs mt-6 overflow-x-auto">
+                        <div><span class="docs-kbd">$</span> antseed seed --provider anthropic</div>
+                        <div class="text-slate-400 mt-2">Announcing on DHT: antseed:anthropic</div>
+                        <div class="text-slate-400">Metadata server listening on 0.0.0.0:6882</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="protocol-spec" class="py-28 border-t border-black/5 relative">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="max-w-3xl mb-12">
+                <h2 class="text-xs font-bold font-mono uppercase tracking-[0.2em] text-teal-accent mb-4">Protocol Overview</h2>
+                <h3 class="text-4xl md:text-5xl font-medium tracking-tight mb-6">Five Layers, Direct Settlement</h3>
+                <p class="text-lg text-ink-muted leading-relaxed">Discovery, transport, metering, payments, and reputation happen peer-to-peer with no central marketplace operator in the request path.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 xl:grid-cols-5 gap-4 mb-10">
+                <div class="glass-panel rounded-xl p-5"><div class="font-mono text-xs text-teal-accent mb-2">L1</div><h4 class="font-semibold">Discovery</h4><p class="text-xs text-ink-muted mt-2">DHT peer discovery and capabilities lookup.</p></div>
+                <div class="glass-panel rounded-xl p-5"><div class="font-mono text-xs text-teal-accent mb-2">L2</div><h4 class="font-semibold">Transport</h4><p class="text-xs text-ink-muted mt-2">WebRTC/TCP binary framing and streaming.</p></div>
+                <div class="glass-panel rounded-xl p-5"><div class="font-mono text-xs text-teal-accent mb-2">L3</div><h4 class="font-semibold">Metering</h4><p class="text-xs text-ink-muted mt-2">Token estimation plus signed receipts.</p></div>
+                <div class="glass-panel rounded-xl p-5"><div class="font-mono text-xs text-teal-accent mb-2">L4</div><h4 class="font-semibold">Payments</h4><p class="text-xs text-ink-muted mt-2">USDC escrow channel settlement.</p></div>
+                <div class="glass-panel rounded-xl p-5"><div class="font-mono text-xs text-teal-accent mb-2">L5</div><h4 class="font-semibold">Reputation</h4><p class="text-xs text-ink-muted mt-2">Local + attestations-based trust score.</p></div>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="docs-panel rounded-2xl p-8">
+                    <h4 class="text-2xl font-semibold mb-4">Message Types</h4>
+                    <table class="w-full text-sm spec-table">
+                        <tbody>
+                            <tr><td class="font-mono text-teal-accent">0x01 / 0x02</td><td class="text-ink-muted">Handshake init + ack</td></tr>
+                            <tr><td class="font-mono text-teal-accent">0x10 / 0x11</td><td class="text-ink-muted">Ping + pong keepalive</td></tr>
+                            <tr><td class="font-mono text-teal-accent">0x20</td><td class="text-ink-muted">Buyer HTTP request</td></tr>
+                            <tr><td class="font-mono text-teal-accent">0x21 / 0x22 / 0x23</td><td class="text-ink-muted">Response full / chunk / end</td></tr>
+                            <tr><td class="font-mono text-teal-accent">0x24</td><td class="text-ink-muted">Response error</td></tr>
+                            <tr><td class="font-mono text-teal-accent">0xF0 / 0xFF</td><td class="text-ink-muted">Disconnect / protocol error</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="docs-panel rounded-2xl p-8">
+                    <h4 class="text-2xl font-semibold mb-4">Settlement Formula</h4>
+                    <p class="text-sm text-ink-muted mb-4">Every request meters usage and settles via escrow receipts.</p>
+                    <div class="docs-code rounded-xl p-5 font-mono text-xs overflow-x-auto">
+                        <div>totalCostUSD = inputTokens * inputRate + outputTokens * outputRate</div>
+                        <div>protocolFeeUSD = totalCostUSD * feeRate</div>
+                        <div>sellerPayoutUSD = totalCostUSD - protocolFeeUSD</div>
+                    </div>
+                    <p class="text-xs text-ink-muted mt-4">Channel lifecycle: <span class="font-mono">open → active → disputed → settled → closed</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cli-reference" class="py-28 border-t border-black/5 relative">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="max-w-3xl mb-12">
+                <h2 class="text-xs font-bold font-mono uppercase tracking-[0.2em] text-teal-accent mb-4">CLI Reference</h2>
+                <h3 class="text-4xl md:text-5xl font-medium tracking-tight mb-6">Operational Commands</h3>
+                <p class="text-lg text-ink-muted leading-relaxed">Key command and flag references from the old docs, now integrated into the main site.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="docs-panel rounded-2xl p-8">
+                    <h4 class="text-2xl font-semibold mb-4">Commands</h4>
+                    <div class="docs-code rounded-xl p-5 font-mono text-xs leading-6">
+                        <div>antseed init</div>
+                        <div>antseed seed --provider &lt;name&gt;</div>
+                        <div>antseed connect --router &lt;name&gt;</div>
+                        <div>antseed status</div>
+                        <div>antseed browse</div>
+                        <div>antseed plugin</div>
+                        <div>antseed dashboard</div>
+                        <div>antseed deposit / withdraw / balance</div>
+                    </div>
+                </div>
+                <div class="docs-panel rounded-2xl p-8">
+                    <h4 class="text-2xl font-semibold mb-4">Global Flags</h4>
+                    <div class="docs-code rounded-xl p-5 font-mono text-xs leading-6">
+                        <div>-c, --config &lt;path&gt;</div>
+                        <div>--data-dir &lt;path&gt;</div>
+                        <div>-v, --verbose</div>
+                        <div>--version</div>
+                        <div>--help</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="router-weights" class="docs-panel rounded-2xl p-8 mt-8">
+                <h4 class="text-2xl font-semibold mb-4">Default Router Weights</h4>
+                <table class="w-full text-sm spec-table">
+                    <tbody>
+                        <tr><td class="font-mono text-teal-accent">Price</td><td class="text-ink-muted">0.30</td></tr>
+                        <tr><td class="font-mono text-teal-accent">Latency</td><td class="text-ink-muted">0.25</td></tr>
+                        <tr><td class="font-mono text-teal-accent">Capacity</td><td class="text-ink-muted">0.20</td></tr>
+                        <tr><td class="font-mono text-teal-accent">Reputation</td><td class="text-ink-muted">0.10</td></tr>
+                        <tr><td class="font-mono text-teal-accent">Freshness</td><td class="text-ink-muted">0.10</td></tr>
+                        <tr><td class="font-mono text-teal-accent">Reliability</td><td class="text-ink-muted">0.05</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 
