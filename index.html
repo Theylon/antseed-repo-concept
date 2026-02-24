@@ -1,26 +1,378 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="logo.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="AntSeed — A Peer-to-Peer AI Services Network. An open market for machines to trade intelligence." />
-    <meta property="og:title" content="AntSeed — A Peer-to-Peer AI Services Network" />
-    <meta property="og:description" content="An open market for machines to trade intelligence. Everyone profits. No one controls." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="logo.svg" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="AntSeed — A Peer-to-Peer AI Services Network" />
-    <meta name="twitter:description" content="An open market for machines to trade intelligence. Everyone profits. No one controls." />
-    <meta name="twitter:image" content="logo.svg" />
-    <title>AntSeed — A Peer-to-Peer AI Services Network</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AntSeed | Unstoppable AI Services Network</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="assets/index-B3BYZopu.js"></script>
-    <link rel="stylesheet" crossorigin href="assets/index-B_LBXyD1.css">
-  </head>
-  <body class="bg-bg text-text font-sans antialiased overflow-x-hidden">
-    <div id="root"></div>
-  </body>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    colors: { paper: '#F9F8F6', teal: { accent: '#134E4A', light: '#1D7872' }, ink: { DEFAULT: '#1C1917', muted: '#78716C' } }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #F9F8F6; color: #1C1917; overflow-x: hidden; }
+        #webgl-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+        
+        .glass-panel {
+            background: linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 100%);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 24px -1px rgba(0,0,0,0.02);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-panel:hover {
+            transform: translateY(-4px);
+            border-color: rgba(19, 78, 74, 0.2);
+            box-shadow: 0 20px 40px -8px rgba(19, 78, 74, 0.08);
+        }
+
+        .cli-window {
+            background: #121212;
+            background-image: linear-gradient(to bottom right, #1a1a1a, #0a0a0a);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.3);
+        }
+        
+        ::selection { background: #134E4A; color: #F9F8F6; }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body class="antialiased selection:bg-teal-accent selection:text-paper">
+
+    <div id="webgl-canvas"></div>
+
+    <nav class="fixed top-0 w-full z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-xl transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer">
+                <div class="w-7 h-7 bg-teal-accent rounded-full flex items-center justify-center shadow-lg shadow-teal-accent/20">
+                    <div class="w-1.5 h-1.5 bg-paper rounded-full"></div>
+                </div>
+                <span class="font-semibold text-xl tracking-tight text-ink">AntSeed</span>
+            </div>
+            <div class="hidden md:flex gap-10 text-sm font-medium text-ink-muted">
+                <a href="#how-it-works" class="hover:text-teal-accent transition-colors">Protocol</a>
+                <a href="#supply" class="hover:text-teal-accent transition-colors">Supply</a>
+                <a href="#markets" class="hover:text-teal-accent transition-colors">Markets</a>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="#" class="hidden sm:block text-sm font-medium text-ink-muted hover:text-ink transition-colors">Docs</a>
+                <button class="bg-teal-accent hover:bg-teal-light text-white text-sm font-medium px-6 py-2.5 rounded-full shadow-md transition-all hover:-translate-y-0.5">Start Building</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="relative pt-48 pb-32">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-12 gap-16 items-center">
+            <div class="lg:col-span-6 relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-accent/5 border border-teal-accent/10 text-teal-accent text-xs font-bold mb-6">
+                    <span class="w-2 h-2 rounded-full bg-teal-accent animate-pulse-slow"></span>
+                    OPEN MARKET LIVE
+                </div>
+                <h1 class="text-6xl md:text-7xl font-medium leading-[1.05] tracking-tight text-ink mb-8">
+                    Your AI tools,<br><span class="text-ink-muted/50 italic font-light">unstoppable.</span>
+                </h1>
+                <p class="text-xl text-ink-muted leading-relaxed mb-10 max-w-lg">
+                    An open market for machines to trade intelligence. Agents discover, carry, and deliver AI services peer-to-peer. Everyone profits. No one controls.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <button class="bg-teal-accent text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:-translate-y-0.5 transition-all">Read the Docs</button>
+                    <button class="bg-white/50 border border-black/5 text-ink px-8 py-4 rounded-xl font-medium backdrop-blur-sm hover:bg-white transition-all">Light Paper</button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-6 relative z-10 perspective-1000">
+                <div class="cli-window rounded-2xl overflow-hidden transform rotate-y-[-5deg] rotate-x-[2deg] transition-transform hover:rotate-0 duration-500">
+                    <div class="px-4 py-3 flex items-center justify-between border-b border-white/5 bg-white/5">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div><div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div><div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+                        </div>
+                        <div class="text-[11px] font-mono text-white/30 uppercase tracking-widest">AntSeed-CLI</div>
+                    </div>
+                    <div class="p-8 font-mono text-sm leading-relaxed text-white/80">
+                        <div class="flex justify-between items-center group cursor-pointer" onclick="copyInstall()">
+                            <div class="flex gap-3"><span class="text-teal-400">~</span><span class="text-white font-medium">npm install -g @antseed/cli</span></div>
+                            <span class="text-xs opacity-0 group-hover:opacity-50 transition-opacity">Copy</span>
+                        </div>
+                        <div class="mt-8 space-y-2 opacity-90">
+                            <div class="flex gap-3 text-teal-400"><span>❯</span><span class="text-white">antseed start --mode proxy</span></div>
+                            <div class="text-white/40 pt-2 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></div> Initializing local daemon...</div>
+                            <div class="text-white/60">↳ Bound to localhost:8080 (OAI-Compatible)</div>
+                            <div class="text-white/40 pt-1">Scanning for peer operators... <span class="text-teal-400">Found 1,204</span></div>
+                            <div class="mt-4 pt-4 border-t border-white/10 text-teal-400">AntSeed is running. Your tools are unstoppable.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="py-32 border-t border-black/5 relative">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="max-w-3xl mb-20">
+                <h2 class="text-xs font-bold font-mono uppercase tracking-[0.2em] text-teal-accent mb-4">How It Works</h2>
+                <h3 class="text-4xl md:text-5xl font-medium tracking-tight mb-6">Install. Route. Unstoppable.</h3>
+                <p class="text-lg text-ink-muted leading-relaxed">AntSeed runs as a local proxy. Your tools send requests to localhost. The protocol handles everything else.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 relative">
+                <div class="hidden md:block absolute top-12 left-10 right-10 h-[1px] bg-gradient-to-r from-teal-accent/0 via-teal-accent/20 to-teal-accent/0 z-0"></div>
+                <div class="glass-panel p-8 rounded-2xl relative z-10">
+                    <div class="w-10 h-10 rounded-full bg-paper border border-black/10 flex items-center justify-center font-mono text-sm font-bold text-teal-accent mb-6 shadow-sm">01</div>
+                    <h4 class="text-xl font-semibold mb-3">Install the daemon</h4>
+                    <p class="text-sm text-ink-muted leading-relaxed">One command. Runs as a background service. Exposes an API-compatible endpoint on localhost. Your existing tools work without modification.</p>
+                </div>
+                <div class="glass-panel p-8 rounded-2xl relative z-10">
+                    <div class="w-10 h-10 rounded-full bg-paper border border-black/10 flex items-center justify-center font-mono text-sm font-bold text-teal-accent mb-6 shadow-sm">02</div>
+                    <h4 class="text-xl font-semibold mb-3">Set your preferences</h4>
+                    <p class="text-sm text-ink-muted leading-relaxed">Tell AntSeed what you care about: cheapest price, lowest latency, specific capabilities, TEE privacy. The router scores all providers and picks the best match.</p>
+                </div>
+                <div class="glass-panel p-8 rounded-2xl relative z-10">
+                    <div class="w-10 h-10 rounded-full bg-paper border border-black/10 flex items-center justify-center font-mono text-sm font-bold text-teal-accent mb-6 shadow-sm">03</div>
+                    <h4 class="text-xl font-semibold mb-3">Never stop working</h4>
+                    <p class="text-sm text-ink-muted leading-relaxed">Hit a rate limit? Provider down? AntSeed detects it instantly and reroutes to the next best provider. Automatic failover across a decentralized network.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="supply" class="py-32 relative border-t border-black/5">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="max-w-2xl mb-16">
+                <h2 class="text-xs font-bold font-mono uppercase tracking-[0.2em] text-teal-accent mb-4">Supply Side</h2>
+                <h3 class="text-4xl md:text-5xl font-medium tracking-tight mb-6">Anyone can provide.<br>No partnership required.</h3>
+                <p class="text-lg text-ink-muted leading-relaxed">The protocol is provider-agnostic. It does not care how a seller fulfills a request. It cares that a response came back, the receipt verified, and quality was consistent.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-panel p-8 rounded-2xl group"><h4 class="text-lg font-semibold text-ink mb-2">Skilled Inference</h4><p class="text-sm text-ink-muted leading-relaxed">Anyone with frontier model API access can offer specialized agents with Skills — legal research, security audit, market analysis. Compete on outcomes, not just price.</p></div>
+                <div class="glass-panel p-8 rounded-2xl group"><h4 class="text-lg font-semibold text-ink mb-2">Self-Hosted Operators</h4><p class="text-sm text-ink-muted leading-relaxed">A gamer with a GPU, a developer with a Mac Mini running open-weight models. No terms-of-service issues. Cost basis is electricity and hardware depreciation.</p></div>
+                <div class="glass-panel p-8 rounded-2xl group"><h4 class="text-lg font-semibold text-ink mb-2">Inference Farms</h4><p class="text-sm text-ink-muted leading-relaxed">Professional operators running optimized stacks at scale. Always on, high throughput, high stake. Farms in cheap-electricity regions set the global floor price.</p></div>
+                <div class="glass-panel p-8 rounded-2xl group"><h4 class="text-lg font-semibold text-ink mb-2">Privacy / TEE Nodes</h4><p class="text-sm text-ink-muted leading-relaxed">Trusted Execution Environments where not even the operator can see prompts. Cryptographic attestation proves the enclave is genuine.</p></div>
+                <div class="glass-panel p-8 rounded-2xl group"><h4 class="text-lg font-semibold text-ink mb-2">Custom Model Operators</h4><p class="text-sm text-ink-muted leading-relaxed">Models serving use cases that cannot exist on centralized platforms — security research, red-teaming, unrestricted creative work.</p></div>
+                <div class="glass-panel p-8 rounded-2xl group"><h4 class="text-lg font-semibold text-ink mb-2">Edge Providers</h4><p class="text-sm text-ink-muted leading-relaxed">Metro-located nodes optimized for speed. For real-time coding assistants, chatbots, and agentic chains where every millisecond matters.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="markets" class="py-32 border-t border-black/5 relative">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-20">
+            <h2 class="text-xs font-bold font-mono uppercase tracking-[0.2em] text-teal-accent mb-4">Evolution</h2>
+            <h3 class="text-4xl md:text-5xl font-medium tracking-tight mb-6">One protocol. Three markets.</h3>
+            <p class="text-lg text-ink-muted leading-relaxed max-w-2xl mx-auto">Each builds on the one before it. All three share the same discovery, routing, reputation, and settlement mechanisms.</p>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-3 gap-8">
+            <div class="glass-panel p-8 rounded-2xl"><div class="font-mono text-xs font-bold text-teal-accent mb-4 border border-teal-accent/20 inline-block px-3 py-1 rounded">01</div><h4 class="text-2xl font-medium mb-4">Commodity Inference</h4><p class="text-sm text-ink-muted leading-relaxed">A seller has a model or API access. A buyer needs inference. They trade directly. Price set by open competition — margins compress toward zero and the buyer pays near-cost.</p></div>
+            <div class="glass-panel p-8 rounded-2xl"><div class="font-mono text-xs font-bold text-teal-accent mb-4 border border-teal-accent/20 inline-block px-3 py-1 rounded">02</div><h4 class="text-2xl font-medium mb-4">Differentiated Services</h4><p class="text-sm text-ink-muted leading-relaxed">Same protocol, but the seller equips their model with Skills — modular packages of domain expertise and workflows. The buyer does not care what is inside. They care about the result.</p></div>
+            <div class="glass-panel p-8 rounded-2xl"><div class="font-mono text-xs font-bold text-teal-accent mb-4 border border-teal-accent/20 inline-block px-3 py-1 rounded">03</div><h4 class="text-2xl font-medium mb-4">Agent Commerce</h4><p class="text-sm text-ink-muted leading-relaxed">Same protocol, but now the buyers are also machines. An autonomous agent holds credits, discovers providers by capability, evaluates reputation, consumes services, and settles payment.</p></div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-black/10 bg-paper">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span class="text-sm font-semibold text-ink">AntSeed Protocol</span>
+            <p class="text-sm text-ink-muted">© 2026 AntSeed Protocol. All routes inevitably lead here.</p>
+        </div>
+    </footer>
+
+    <script>
+        const UI_STATE = { scrollY: 0, mouseX: 0, mouseY: 0 };
+        window.addEventListener('scroll', () => UI_STATE.scrollY = window.scrollY);
+        window.addEventListener('mousemove', (e) => {
+            UI_STATE.mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            UI_STATE.mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2('#F9F8F6', 0.015);
+
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 45);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.getElementById('webgl-canvas').appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 2);
+        dirLight.position.set(20, 30, 20);
+        scene.add(dirLight);
+
+        const nodeMaterial = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.2, transmission: 0.9, thickness: 2, transparent: true });
+        const activeLineMat = new THREE.LineBasicMaterial({ color: 0x134E4A, transparent: true, opacity: 0.15 });
+        const errorLineMat = new THREE.LineBasicMaterial({ color: 0xEA580C, transparent: true, opacity: 0.8 });
+
+        const nodes = [];
+        const edges = [];
+        let antTemplate = null;
+
+        // PROCEDURAL FALLBACK ANT
+        function createProceduralAnt() {
+            const group = new THREE.Group();
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0a2927, roughness: 0.7 });
+            
+            // Body parts
+            const abdomen = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), bodyMat); abdomen.position.set(-0.25, 0, 0); group.add(abdomen);
+            const thorax = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), bodyMat); thorax.position.set(0.05, 0, 0); group.add(thorax);
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), bodyMat); head.position.set(0.3, 0, 0); group.add(head);
+            
+            // Seed
+            const seed = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x4ade80 }));
+            seed.position.set(0.05, 0.15, 0); group.add(seed);
+            
+            group.scale.set(0.6, 0.6, 0.6);
+            return group;
+        }
+
+        // HYBRID LOADER WITH AUTO-SCALING
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+            'ant.glb', 
+            function (gltf) {
+                const rawModel = gltf.scene;
+
+                // 1. Calculate the model's original size
+                const box = new THREE.Box3().setFromObject(rawModel);
+                const size = new THREE.Vector3();
+                box.getSize(size);
+                
+                // 2. Find its largest dimension and calculate a scale factor
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const targetSize = 0.8; // The exact size we want the ant to be in our scene
+                const scaleFactor = targetSize / maxDim;
+                rawModel.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
+                // 3. Center the model (so it doesn't float weirdly off the line)
+                box.setFromObject(rawModel); // Recalculate box after scaling
+                const center = new THREE.Vector3();
+                box.getCenter(center);
+                rawModel.position.sub(center); // Pull it to the exact center 0,0,0
+
+                // 4. Apply our aesthetic dark teal material
+                rawModel.traverse((c) => { 
+                    if (c.isMesh) c.material = new THREE.MeshStandardMaterial({ color: 0x0a2927, roughness: 0.6 }); 
+                });
+
+                // 5. Wrap it in a clean group and attach the data seed
+                antTemplate = new THREE.Group();
+                antTemplate.add(rawModel);
+
+                const seed = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), new THREE.MeshBasicMaterial({ color: 0x4ade80 }));
+                seed.position.set(0, 0.3, 0); // Positioned right on its back
+                antTemplate.add(seed);
+
+                initNetwork();
+            },
+            undefined,
+            function (error) {
+                console.warn("No ant.glb found, using procedural fallback.");
+                antTemplate = createProceduralAnt();
+                initNetwork();
+            }
+        );
+
+        function initNetwork() {
+            for (let i = 0; i < 40; i++) {
+                const mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(Math.random() * 0.8 + 0.4, 0), nodeMaterial);
+                mesh.position.set((Math.random() - 0.5) * 60, 30 - (Math.random() * 150), (Math.random() - 0.5) * 20 - 5);
+                mesh.userData = { baseY: mesh.position.y, offset: Math.random() * Math.PI * 2 };
+                scene.add(mesh); nodes.push(mesh);
+            }
+
+            for (let i = 0; i < nodes.length; i++) {
+                const candidates = nodes.filter(n => n.position.y < nodes[i].position.y && n.position.y > nodes[i].position.y - 30);
+                if (candidates.length > 0) createConnection(nodes[i], candidates[Math.floor(Math.random() * candidates.length)]);
+            }
+            animate();
+        }
+
+        function createConnection(startNode, endNode) {
+            const points = [];
+            for (let i = 0; i <= 10; i++) {
+                const t = i / 10;
+                const pt = new THREE.Vector3().lerpVectors(startNode.position, endNode.position, t);
+                if (i > 0 && i < 10) { pt.x += Math.sin(t * Math.PI) * (Math.random() * 4 - 2); pt.z += Math.sin(t * Math.PI) * (Math.random() * 4 - 2); }
+                points.push(pt);
+            }
+            const curve = new THREE.CatmullRomCurve3(points);
+            const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(50)), activeLineMat);
+            scene.add(line);
+
+            const packets = [];
+            for(let j=0; j<3; j++) {
+                const ant = antTemplate.clone();
+                scene.add(ant);
+                packets.push({ mesh: ant, progress: Math.random(), speed: 0.003 + Math.random() * 0.005 });
+            }
+            edges.push({ startNode, endNode, curve, line, packets, active: true });
+        }
+
+        // Self Healing Algorithm
+        setInterval(() => {
+            if(edges.length === 0) return;
+            const activeEdges = edges.filter(e => e.active);
+            if(activeEdges.length === 0) return;
+            
+            const edge = activeEdges[Math.floor(Math.random() * activeEdges.length)];
+            edge.active = false; edge.line.material = errorLineMat;
+            
+            setTimeout(() => {
+                scene.remove(edge.line); edge.packets.forEach(p => scene.remove(p.mesh));
+                const c = nodes.filter(n => n !== edge.startNode && n !== edge.endNode && Math.abs(n.position.y - edge.startNode.position.y) < 30);
+                if (c.length > 0) createConnection(edge.startNode, c[Math.floor(Math.random() * c.length)]);
+            }, 800);
+        }, 3000);
+
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+
+            nodes.forEach(node => {
+                node.rotation.x += 0.001; node.rotation.y += 0.002;
+                node.position.y = node.userData.baseY + Math.sin(time + node.userData.offset) * 1.5;
+            });
+
+            edges.forEach(edge => {
+                if(edge.active) {
+                    edge.packets.forEach(packet => {
+                        packet.progress += packet.speed;
+                        if(packet.progress > 1) packet.progress = 0;
+                        packet.mesh.position.copy(edge.curve.getPointAt(packet.progress));
+                        packet.mesh.lookAt(edge.curve.getPointAt(Math.min(packet.progress + 0.01, 1)));
+                    });
+                }
+            });
+
+            camera.position.y += (-(UI_STATE.scrollY * 0.035) - camera.position.y) * 0.1;
+            camera.position.x += ((UI_STATE.mouseX * 3) - camera.position.x) * 0.05;
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        function copyInstall() { navigator.clipboard.writeText("npm install -g @antseed/cli"); }
+    </script>
+</body>
 </html>
