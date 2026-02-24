@@ -3,7 +3,10 @@ set -euo pipefail
 
 PORT="${1:-8080}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENTRY_FILE="antseed.html"
+ENTRY_FILE="index.html"
+if [ ! -f "$ROOT_DIR/$ENTRY_FILE" ]; then
+  ENTRY_FILE="antseed.html"
+fi
 
 if ! [[ "$PORT" =~ ^[0-9]+$ ]] || [ "$PORT" -lt 1 ] || [ "$PORT" -gt 65535 ]; then
   echo "Invalid port: $PORT"
